@@ -1,0 +1,1448 @@
+8-24-2026
+#starting over - to set both p-ajd < 0.05
+#64 core machine
+#/media/Scratch2nd4TB/Donovan/Erik_WKO_TEMP/usftp21.novogene.com/X202SC20020231-Z01-F002_Arabidopsis_thaliana_result/4.DiffExprAnalysis/DEGlist
+
+#make a directory for copies of the original expression output (DeSeq2)
+
+mkdir DEG_w_padj05_logfold1
+
+#copy original files into directory
+cp root_2vscont_r/root_2vscont_r_DEG.xls DEG_w_padj05_logfold1
+
+cp shoot_2vscont_s/shoot_2vscont_s_DEG.xls DEG_w_padj05_logfold1
+
+cp /media/Scratch2nd4TB/Donovan/Erik_WKO_TEMP/usftp21.novogene.com/arabipsis_genes_names.txt DEG_w_padj05_logfold1/
+
+cd DEG_w_padj05_logfold1/
+
+mkdir DEG_filtered
+
+mv arabipsis_genes_names.txt DEG_filtered/
+
+#script for filtering adjp (column 10) - then used logfold chance + and - value to characterize as up or down.
+
+for i in root_2vscont_r_DEG.xls  shoot_2vscont_s_DEG.xls  
+do
+awk '$10<=0.05' $i | awk '$8 >= 1' > DEG_filtered/up.$i
+awk '$10<=0.05' $i | awk '$8 <= -1' > DEG_filtered/down.$i
+done
+
+cd DEG_filtered/
+
+
+#starting comparisons... /media/Scratch2nd4TB/Donovan/Erik_WKO_TEMP/usftp21.novogene.com/X202SC20020231-Z01-F002_Arabidopsis_thaliana_result/4.DiffExprAnalysis/DEGlist/DEG_w_padj05_and_logfold_of1/DEG_filtered
+##############################################
+##################################################
+
+#8/24/26  PRIMARY METABOLIC PATHWAY WORKING FROM PEP to DAHP SYNTHASE DOWN
+
+
+
+
+#####DAHP SYNTHASE 3-deoxy-D-arabino-heptulosonate 7-phosphate synthase  - Takes PEP to make DAHP... AT4G39980 (DAHP1) and AT4G33510 (DAHP2)
+
+#2 copies
+
+grep AT4G39980 arabipsis_genes_names.txt > AT4G39980_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT4G39980_ref_list.txt > AT4G39980-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT4G39980-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT4G39980-hits.txt
+
+#now we want to go back and match comparison, locus, AT4G39980 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT4G39980_ref_list.txt AT4G39980-hits.txt > AT4G39980-matched.txt
+
+##up.root_2vscont_r_DEG.xls       AT4G39980       DHS1
+##up.shoot_2vscont_s_DEG.xls      AT4G39980       DHS1
+
+#second copy
+grep AT4G33510 arabipsis_genes_names.txt > AT4G33510_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT4G33510_ref_list.txt > AT4G33510-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT4G33510-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT4G33510-hits.txt
+
+#now we want to go back and match comparison, locus, AT4G33510 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT4G33510_ref_list.txt AT4G33510-hits.txt > AT4G33510-matched.txt
+
+##no DEGs
+
+
+
+#####NOW DAHP to 3-dehydroquinate using 3-dehydroquinate synthase - arabidopsis DHQS
+
+
+#these are AT5G66120 (3-dehydroquinate synthase) and AT3G28760 (3-dehydroquinate synthase) in Athaliana 
+
+grep AT5G66120 arabipsis_genes_names.txt > AT5G66120_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT5G66120_ref_list.txt > AT5G66120-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT5G66120-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT5G66120-hits.txt
+
+#now we want to go back and match comparison, locus, AT5G66120 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT5G66120_ref_list.txt AT5G66120-hits.txt > AT5G66120-matched.txt
+
+
+#root_2vscont_r_DEG_up.xls       AT5G66120       DHQS
+
+
+
+#another copy of DHQS AT3G28760 
+grep AT3G28760 arabipsis_genes_names.txt > AT3G28760_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT3G28760_ref_list.txt > AT3G28760-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT3G28760-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT3G28760-hits.txt
+
+#now we want to go back and match comparison, locus, AT3G28760 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT3G28760_ref_list.txt AT3G28760-hits.txt > AT3G28760-matched.txt
+
+
+#no hits
+
+
+
+
+
+#####3DD known as AT3G06350 in the file - 3-dehydroquinate dehydratase (EMB3004) - this enzyme catalyzes two or more sequential steps in the pathway.  https://pubmed.ncbi.nlm.nih.gov/16784230/
+## a second copy is apparently AT5G66120
+
+grep AT3G06350 arabipsis_genes_names.txt > AT3G06350_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT3G06350_ref_list.txt > AT3G06350-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT3G06350-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT3G06350-hits.txt
+
+#now we want to go back and match comparison, locus, AT3G06350 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT3G06350_ref_list.txt AT3G06350-hits.txt > AT3G06350-matched.txt
+
+#AT3G06350_ref_list.txt  AT3G06350       EMB3004
+#NO DEG
+
+
+
+
+#######SK - is shakimate kinase - two copies, one realated to heat
+#AT2G21940       SK1
+#AT4G39540       SK2
+
+#running both
+grep AT2G21940 arabipsis_genes_names.txt > AT2G21940_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT2G21940_ref_list.txt > AT2G21940-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT2G21940-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT2G21940-hits.txt
+
+#now we want to go back and match comparison, locus, AT2G21940 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT2G21940_ref_list.txt AT2G21940-hits.txt > AT2G21940-matched.txt
+
+#no hits
+
+#second 
+grep AT4G39540 arabipsis_genes_names.txt > AT4G39540_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT4G39540_ref_list.txt > AT4G39540-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT4G39540-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT4G39540-hits.txt
+
+#now we want to go back and match comparison, locus, AT4G39540 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT4G39540_ref_list.txt AT4G39540-hits.txt > AT4G39540-matched.txt
+
+root_2vscont_r_DEG_up.xls       AT4G39540       SK2
+
+
+#####EPSP EPSP synthase - seems to be two related genes in Arabidopsis EPSP (AT2G45300) and EPSPS doing both
+#EPSP AT2G45300
+#EPSPS AT1G48860
+
+grep AT2G45300 arabipsis_genes_names.txt > AT2G45300_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT2G45300_ref_list.txt > AT2G45300-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT2G45300-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT2G45300-hits.txt
+
+#now we want to go back and match comparison, locus, AT2G45300 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT2G45300_ref_list.txt AT2G45300-hits.txt > AT2G45300-matched.txt
+
+
+#root_2vscont_r_DEG_up.xls       AT2G45300
+#shoot_2vscont_s_DEG_up.xls      AT2G45300
+
+##now 
+grep AT1G48860 arabipsis_genes_names.txt > AT1G48860_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT1G48860_ref_list.txt > AT1G48860-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT1G48860-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT1G48860-hits.txt
+
+#now we want to go back and match comparison, locus, AT1G48860 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT1G48860_ref_list.txt AT1G48860-hits.txt > AT1G48860-matched.txt
+
+#AT1G48860_ref_list.txt  AT1G48860
+#No DEG
+
+
+####CS Chorismate synthase - hard to find for some reason
+#uniprot took me to AT1G48850 which is also EMB1144
+
+grep AT1G48850 arabipsis_genes_names.txt > AT1G48850_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT1G48850_ref_list.txt > AT1G48850-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT1G48850-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT1G48850-hits.txt
+
+#now we want to go back and match comparison, locus, AT1G48850 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT1G48850_ref_list.txt AT1G48850-hits.txt > AT1G48850-matched.txt
+
+#up.root_2vscont_r_DEG.xls       AT1G48850       EMB1144
+#up.shoot_2vscont_s_DEG.xls      AT1G48850       EMB1144
+
+#####CM - chorismate mutase
+#Potentially three relevant loci, CM1, CM2, CM3
+#CM1 AT3G29200
+#CM2 AT5G10870
+#CM3 AT1G69370
+
+grep AT3G29200 arabipsis_genes_names.txt > AT3G29200_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT3G29200_ref_list.txt > AT3G29200-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT3G29200-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT3G29200-hits.txt
+
+#now we want to go back and match comparison, locus, AT3G29200 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT3G29200_ref_list.txt AT3G29200-hits.txt > AT3G29200-matched.txt
+
+
+up.root_2vscont_r_DEG.xls       AT3G29200       CM1
+
+grep AT5G10870 arabipsis_genes_names.txt > AT5G10870_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT5G10870_ref_list.txt > AT5G10870-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT5G10870-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT5G10870-hits.txt
+
+#now we want to go back and match comparison, locus, AT5G10870 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT5G10870_ref_list.txt AT5G10870-hits.txt > AT5G10870-matched.txt
+#this was CM2
+#NO HITS
+
+######
+
+grep AT1G69370 arabipsis_genes_names.txt > AT1G69370_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT1G69370_ref_list.txt > AT1G69370-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT1G69370-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT1G69370-hits.txt
+
+#now we want to go back and match comparison, locus, AT1G69370 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT1G69370_ref_list.txt AT1G69370-hits.txt > AT1G69370-matched.txt
+
+
+shoot_2vscont_s_DEG_up.xls      AT1G69370       CM3
+
+
+
+
+############AAT AND PAT - three potential copies, but TAIR suggests some of these are PAT genes.  Other AAT genes are involved in nitrogen metabolism.
+#AAT - has three potential copies:
+#AAT - AT2G22250 (These seems to be the relevant PAT enzyme in the Shakimic acid pathway)
+#AAT2 probably not relevant) - AT5G19550, nitogen metabolism
+#AAT3 - AT4G31990 (not relevant either - TAIR says "Does not display any PAT (glutamate/aspartate-prephenate aminotransferase) activity even in the presence of a high concentration of prephenate"
+
+#AAT first:
+
+grep AT2G22250 arabipsis_genes_names.txt > AT2G22250_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT2G22250_ref_list.txt > AT2G22250-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT2G22250-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT2G22250-hits.txt
+
+#now we want to go back and match comparison, locus, AT2G22250 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT2G22250_ref_list.txt AT2G22250-hits.txt > AT2G22250-matched.txt
+
+#up.root_2vscont_r_DEG.xls       AT2G22250       PAT
+
+
+
+
+
+
+#AAT3 now this is also called ASP5
+
+grep AT4G31990 arabipsis_genes_names.txt > AT4G31990_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT4G31990_ref_list.txt > AT4G31990-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT4G31990-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT4G31990-hits.txt
+
+#now we want to go back and match comparison, locus, AT4G31990 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT4G31990_ref_list.txt AT4G31990-hits.txt > AT4G31990-matched.txt
+
+
+#no hits but in our system 
+
+
+#############################################
+#Argenate dehydratse (6 relevant copies, ADT1-6)
+##ADT has no less than 6 genes in the AT genome
+#ADT1 - AT1G11790
+#ADT2 - AT3G07630
+#ADT3 - AT2G27820
+#ADT4 - AT3G44720
+#ADT5 - AT5G22630
+#ADT6 - AT1G08250 (apparently more active with argonate than phrephenate - so may not be relevant)
+
+
+#ADT1 first
+grep AT1G11790 arabipsis_genes_names.txt > AT1G11790_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT1G11790_ref_list.txt > AT1G11790-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT1G11790-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT1G11790-hits.txt
+
+#now we want to go back and match comparison, locus, AT1G11790 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT1G11790_ref_list.txt AT1G11790-hits.txt > AT1G11790-matched.txt
+
+
+
+#root_2vscont_r_DEG_up.xls       AT1G11790       ADT1
+
+
+
+#####ADT2
+grep AT3G07630 arabipsis_genes_names.txt > AT3G07630_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT3G07630_ref_list.txt > AT3G07630-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT3G07630-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT3G07630-hits.txt
+
+#now we want to go back and match comparison, locus, AT3G07630 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT3G07630_ref_list.txt AT3G07630-hits.txt > AT3G07630-matched.txt
+
+#no DEGs
+
+
+
+
+
+########ADT3
+grep AT2G27820 arabipsis_genes_names.txt > AT2G27820_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT2G27820_ref_list.txt > AT2G27820-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT2G27820-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT2G27820-hits.txt
+
+#now we want to go back and match comparison, locus, AT2G27820 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT2G27820_ref_list.txt AT2G27820-hits.txt > AT2G27820-matched.txt
+
+#no DEGs
+
+#########ADT4
+
+grep AT3G44720 arabipsis_genes_names.txt > AT3G44720_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT3G44720_ref_list.txt > AT3G44720-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT3G44720-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT3G44720-hits.txt
+
+#now we want to go back and match comparison, locus, AT3G44720 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT3G44720_ref_list.txt AT3G44720-hits.txt > AT3G44720-matched.txt
+
+
+
+#shoot_2vscont_s_DEG_up.xls      AT3G44720       ADT4
+
+
+
+######################ADT5
+
+grep AT5G22630 arabipsis_genes_names.txt > AT5G22630_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT5G22630_ref_list.txt > AT5G22630-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT5G22630-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT5G22630-hits.txt
+
+#now we want to go back and match comparison, locus, AT5G22630 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT5G22630_ref_list.txt AT5G22630-hits.txt > AT5G22630-matched.txt
+
+#root_2vscont_r_DEG_up.xls       AT5G22630       ADT5
+#shoot_2vscont_s_DEG_up.xls      AT5G22630       ADT5
+
+
+
+######################ADT6
+
+grep AT1G08250 arabipsis_genes_names.txt > AT1G08250_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT1G08250_ref_list.txt > AT1G08250-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT1G08250-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT1G08250-hits.txt
+
+#now we want to go back and match comparison, locus, AT1G08250 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT1G08250_ref_list.txt AT1G08250-hits.txt > AT1G08250-matched.txt
+
+#NO DEGs
+
+
+
+######PAL loci
+#get the PAL names by locus and by PAL# (1-4)
+grep PAL arabipsis_genes_names.txt > PAL_ref_list.txt
+
+#get just the locus name
+cut -f1 PAL_ref_list.txt > PAL-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f PAL-loci.txt * | cut -f1 | sed 's/:/\t/g' > PAL-hits.txt
+
+#now we want to go back and match comparison, locus, PAL name
+#if field 1 in PAL_ref_list.txt matches field 2 in PAL-hits.txt,  recover the row in PAL-hits.txt and add field 2 from pal_ref_list.txt to the recoverd row. 
+#Ask chatgpt - I have two tab delimited files in ubuntu. I want to create a third file based on this process - if field 1 in the file PAL_ref_list.txt matches field 2 in PAL-hits.txt then recover the row in PAL-hits.txt and add field 2 from pal_ref_list.txt to the recoverd
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' PAL_ref_list.txt PAL-hits.txt > PAL-matched.txt
+
+#up.root_2vscont_r_DEG.xls       AT3G53260       PAL2
+#up.root_2vscont_r_DEG.xls       AT2G37040       PAL1
+#up.shoot_2vscont_s_DEG.xls      AT2G37040       PAL1
+#up.shoot_2vscont_s_DEG.xls      AT3G53260       PAL2
+#up.shoot_2vscont_s_DEG.xls      AT3G10340       PAL4
+
+
+
+
+###########
+#CYP73A5/C4H - synonymous, the former is the AT specific name for C4H.
+
+grep CYP73A5 arabipsis_genes_names.txt > CYP73A5_ref_list.txt
+
+#get just the locus name
+cut -f1 CYP73A5_ref_list.txt > CYP73A5-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f CYP73A5-loci.txt * | cut -f1 | sed 's/:/\t/g' > CYP73A5-hits.txt
+
+#now we want to go back and match comparison, locus, CYP73A5 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' CYP73A5_ref_list.txt CYP73A5-hits.txt > CYP73A5-matched.txt
+
+#result
+
+#up.root_2vscont_r_DEG.xls       AT2G30490       CYP73A5
+#up.shoot_2vscont_s_DEG.xls      AT2G30490       CYP73A5
+
+
+
+
+############4CL
+grep 4CL arabipsis_genes_names.txt > 4CL_ref_list.txt
+
+#there are four copies known to impact phenolics - but also other related 4CLL genes, apparently part of the same family
+
+#get just the locus name
+cut -f1 4CL_ref_list.txt > 4CL-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f 4CL-loci.txt * | cut -f1 | sed 's/:/\t/g' > 4CL-hits.txt
+
+#now we want to go back and match comparison, locus, 4CL name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' 4CL_ref_list.txt 4CL-hits.txt > 4CL-matched.txt
+
+#result - other copies like 4CLL5 adn 4CLL8 seem to have other functions on transcinnamic acid.
+
+
+#up.root_2vscont_r_DEG.xls       AT1G51680       4CL1
+#up.root_2vscont_r_DEG.xls       AT3G21240       4CL2
+#up.root_2vscont_r_DEG.xls       AT3G21230       4CL4
+#up.shoot_2vscont_s_DEG.xls      AT3G21230       4CL4
+#up.shoot_2vscont_s_DEG.xls      AT1G51680       4CL1
+#up.shoot_2vscont_s_DEG.xls      AT3G21240       4CL2
+#NO DEG	 AT1G65060       4CL3
+
+
+
+
+
+
+########HCT - no match...
+#TAIR tells me this should be AT5G48930 which is called HST in our annotation but elsewhere keeps the name HCT
+
+
+grep HST arabipsis_genes_names.txt > HST_ref_list.txt
+
+#but then there are two copies of HST... 
+
+#get just the locus name
+cut -f1 HST_ref_list.txt > HST-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f HST-loci.txt * | cut -f1 | sed 's/:/\t/g' > HST-hits.txt
+
+#now we want to go back and match comparison, locus, 4CL name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' HST_ref_list.txt HST-hits.txt > HST-matched.txt
+
+#up.root_2vscont_r_DEG.xls       AT5G48930       HST
+
+
+
+## p-CSA is the chemical p-coumaroyl shikimate.  This is converted into Caffeoyl shikimate by CYP98A3 (AT2G40890) on the way to becoming chlorgenic acid.
+
+grep AT2G40890 arabipsis_genes_names.txt > AT2G40890_ref_list.txt
+
+#One copy of OMT3
+
+#get just the locus name
+cut -f1 AT2G40890_ref_list.txt > AT2G40890-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT2G40890-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT2G40890-hits.txt
+
+#now we want to go back and match comparison, locus, AT2G40890 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT2G40890_ref_list.txt AT2G40890-hits.txt > AT2G40890-matched.txt
+
+#up.root_2vscont_r_DEG.xls       AT2G40890       CYP98A3
+
+
+
+###CSE
+grep CSE arabipsis_genes_names.txt > CSE_ref_list.txt
+
+#One copy of CSE
+
+#get just the locus name
+cut -f1 CSE_ref_list.txt > CSE-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f CSE-loci.txt * | cut -f1 | sed 's/:/\t/g' > CSE-hits.txt
+
+#now we want to go back and match comparison, locus, CSE name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' CSE_ref_list.txt CSE-hits.txt > CSE-matched.txt
+
+#no DEG
+
+
+###A small fork here HCT (sometimes called HST) comes back into play and can take caffeic acid on towards the production of Chlorogenic acid..
+grep HST arabipsis_genes_names.txt > HST_ref_list.txt
+
+#but then there are two copies of HST... 
+
+#get just the locus name
+cut -f1 HST_ref_list.txt > HST-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f HST-loci.txt * | cut -f1 | sed 's/:/\t/g' > HST-hits.txt
+
+#now we want to go back and match comparison, locus, 4CL name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' HST_ref_list.txt HST-hits.txt > HST-matched.txt
+
+#up.root_2vscont_r_DEG.xls       AT5G48930       HST
+
+
+# caffeoyl-3-O-glucoside that is converted to Chlorogenic acid by 
+
+
+####COMT
+#COMT
+####the fate of caffeic acid is the regulated by Caffeate O-methyltransferase 1 (COMT1) AT5G54160
+
+grep AT5G54160 arabipsis_genes_names.txt > AT5G54160_ref_list.txt
+
+
+#get just the locus name
+cut -f1 AT5G54160_ref_list.txt > AT5G54160-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT5G54160-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT5G54160-hits.txt
+
+#now we want to go back and match comparison, locus, AT5G54160 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT5G54160_ref_list.txt AT5G54160-hits.txt > AT5G54160-matched.txt
+
+
+#up.root_2vscont_r_DEG.xls       AT5G54160       OMT1
+#up.shoot_2vscont_s_DEG.xls      AT5G54160       OMT1
+
+
+
+
+
+### cytochrome p450/F5H - Ferulate 5-hydroxylase (F5H)
+#AT4G36220
+
+grep AT4G36220 arabipsis_genes_names.txt > AT4G36220_ref_list.txt
+
+
+#get just the locus name
+cut -f1 AT4G36220_ref_list.txt > AT4G36220-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT4G36220-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT4G36220-hits.txt
+
+#now we want to go back and match comparison, locus, AT4G36220 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT4G36220_ref_list.txt AT4G36220-hits.txt > AT4G36220-matched.txt
+
+#no DEG for F5H CYP84A1
+
+
+########### AT3G19450     CAD4
+
+
+grep AT3G19450  arabipsis_genes_names.txt > AT3G19450_ref_list.txt
+
+
+#get just the locus name
+cut -f1 AT3G19450_ref_list.txt > AT3G19450-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT3G19450-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT3G19450-hits.txt
+
+#now we want to go back and match comparison, locus, AT3G19450 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT3G19450_ref_list.txt AT3G19450-hits.txt > AT3G19450-matched.txt
+
+
+#No DEG
+
+
+########### At4g34230	  CAD5
+grep AT4G34230  arabipsis_genes_names.txt > AT4G34230_ref_list.txt
+
+
+#get just the locus name
+cut -f1 AT4G34230_ref_list.txt > AT4G34230-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT4G34230-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT4G34230-hits.txt
+
+#now we want to go back and match comparison, locus, AT4G34230 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT4G34230_ref_list.txt AT4G34230-hits.txt > AT4G34230-matched.txt
+
+##results:
+
+#up.shoot_2vscont_s_DEG.xls      AT4G34230       CAD5
+
+#back to the Chorogenic acid couple steps 
+
+
+##############
+#######
+#Back to the chlorogenic acid branch in the pathway
+
+#p-CSA is the chemical p-coumaroyl shikimate. It turns out that CYP98A3 acts here again... it has two roles in this system. - info copied from above to hear again.
+
+
+grep AT2G40890 arabipsis_genes_names.txt > AT2G40890_ref_list.txt
+
+#One copy of OMT3
+
+#get just the locus name
+cut -f1 AT2G40890_ref_list.txt > AT2G40890-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT2G40890-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT2G40890-hits.txt
+
+#now we want to go back and match comparison, locus, AT2G40890 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT2G40890_ref_list.txt AT2G40890-hits.txt > AT2G40890-matched.txt
+
+#up.root_2vscont_r_DEG.xls       AT2G40890       CYP98A3*
+
+
+
+
+
+
+
+
+###########
+################## second branch in the secondary pathway
+## CHS - two genes
+
+grep CHS arabipsis_genes_names.txt > CHS_ref_list.txt
+
+#two copies come up, but CHS1 seems to be something different.  However I should look at some additional CHS genes that come up in the tair CHS search
+
+
+#get just the locus name
+cut -f1 CHS_ref_list.txt > CHS-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f CHS-loci.txt * | cut -f1 | sed 's/:/\t/g' > CHS-hits.txt
+
+#now we want to go back and match comparison, locus, CHS name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' CHS_ref_list.txt CHS-hits.txt > CHS-matched.txt
+
+#CHS_ref_list.txt        AT1G17610       CHS1
+#CHS_ref_list.txt        AT5G13930       CHS
+
+#no DEG as the 2 hour time scale
+
+
+######CHI  
+#AT3G55120
+#Other Names: A11;ATCHI;CFI;CHALCONE FLAVANONE ISOMERASE;CHALCONE ISOMERASE;CHI;TRANSPARENT TESTA 5;TT5
+
+#Catalyzes the conversion of chalcones into flavanones. Required for the accumulation of purple anthocyanins in leaves and stems. Co-expressed with CHS. doesn't work when I search CFI so using the locus name
+
+
+grep AT3G55120 arabipsis_genes_names.txt > CFI_ref_list.txt
+
+#two copies come up, but CFI seems to be something different.  However I should look at some additional CFI genes that come up in the tair CFI search
+
+
+#get just the locus name
+cut -f1 CFI_ref_list.txt > CFI-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f CFI-loci.txt * | cut -f1 | sed 's/:/\t/g' > CFI-hits.txt
+
+#now we want to go back and match comparison, locus, CFI name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' CFI_ref_list.txt CFI-hits.txt > CFI-matched.txt
+
+CFI-loci.txt    AT3G55120       CHI1
+CFI_ref_list.txt        AT3G55120       CHI1
+#not DE
+
+
+#########F3H
+
+grep F3H arabipsis_genes_names.txt > F3H_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 F3H_ref_list.txt > F3H-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f F3H-loci.txt * | cut -f1 | sed 's/:/\t/g' > F3H-hits.txt
+
+#now we want to go back and match comparison, locus, F3H name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' F3H_ref_list.txt F3H-hits.txt > F3H-matched.txt
+
+### NO DEGs at any time point.
+#F3H-loci.txt    AT3G51240       F3H
+#F3H_ref_list.txt        AT1G10840       TIF3H1
+#F3H_ref_list.txt        AT3G51240       F3H
+
+
+######################inserting an extra gene/step - see Cheng et al. 2007
+
+#DFR AT5G42800     
+
+grep DFRA arabipsis_genes_names.txt > DFRA_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 DFRA_ref_list.txt > DFRA-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f DFRA-loci.txt * | cut -f1 | sed 's/:/\t/g' > DFRA-hits.txt
+
+#now we want to go back and match comparison, locus, DFRA name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' DFRA_ref_list.txt DFRA-hits.txt > DFRA-matched.txt
+
+
+#no DEG for DFRA
+#DFRA-loci.txt   AT5G42800       DFRA
+#DFRA_ref_list.txt       AT5G42800       DFRA
+
+
+
+
+
+#########LDOX
+
+grep LDOX arabipsis_genes_names.txt > LDOX_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 LDOX_ref_list.txt > LDOX-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f LDOX-loci.txt * | cut -f1 | sed 's/:/\t/g' > LDOX-hits.txt
+
+#now we want to go back and match comparison, locus, LDOX name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' LDOX_ref_list.txt LDOX-hits.txt > LDOX-matched.txt
+
+### NO DEGs at any time point.
+#AT4G22880       LDOX
+
+
+
+#######UF3GT (perhaps three members are potentially involved here... 
+#AT5G54060
+grep AT5G54060 arabipsis_genes_names.txt > AT5G54060_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT5G54060_ref_list.txt > AT5G54060-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT5G54060-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT5G54060-hits.txt
+
+#now we want to go back and match comparison, locus, AT5G54060 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT5G54060_ref_list.txt AT5G54060-hits.txt > AT5G54060-matched.txt
+
+#NO DEG
+#AT5G54060-loci.txt      AT5G54060       A3G2XYLT
+
+
+#######UF3GT 
+AT5G54010
+grep AT5G54010 arabipsis_genes_names.txt > AT5G54010_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT5G54010_ref_list.txt > AT5G54010-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT5G54010-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT5G54010-hits.txt
+
+#now we want to go back and match comparison, locus, AT5G54010 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT5G54010_ref_list.txt AT5G54010-hits.txt > AT5G54010-matched.txt
+
+#NO DE 0 AT5G54010_ref_list.txt  AT5G54010       UGT79B6
+
+#######UF3GT 
+#AT5G17050
+grep AT5G17050 arabipsis_genes_names.txt > AT5G17050_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 AT5G17050_ref_list.txt > AT5G17050-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT5G17050-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT5G17050-hits.txt
+
+#now we want to go back and match comparison, locus, AT5G17050 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT5G17050_ref_list.txt AT5G17050-hits.txt > AT5G17050-matched.txt
+
+#no DEGs at 2 hour
+#UGT78D2
+
+
+#####BAN gene converts anthocyanidins to proanthocyanidins...
+
+grep BAN arabipsis_genes_names.txt > BAN_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 BAN_ref_list.txt > BAN-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f BAN-loci.txt * | cut -f1 | sed 's/:/\t/g' > BAN-hits.txt
+
+#now we want to go back and match comparison, locus, BAN name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' BAN_ref_list.txt BAN-hits.txt > BAN-matched.txt
+
+#No DEGs
+#BAN_ref_list.txt        AT1G61720       BAN
+
+
+############
+###now some branching points off this subpathway
+
+##FLS1 is AT5G08640, FLAVONOL SYNTHASE.  Takes Flavanones and turns them into flavons... 
+
+grep FLS1 arabipsis_genes_names.txt > FLS1_ref_list.txt
+
+#
+
+#get just the locus name
+cut -f1 FLS1_ref_list.txt > FLS1-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f FLS1-loci.txt * | cut -f1 | sed 's/:/\t/g' > FLS1-hits.txt
+
+#now we want to go back and match comparison, locus, FLS1 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' FLS1_ref_list.txt FLS1-hits.txt > FLS1-matched.txt
+
+##NO DEGS at any timepoint... enzyme has multiple functions
+#FLS1_ref_list.txt       AT5G08640       FLS1
+
+
+
+
+
+
+
+
+
+#########################################################
+#PDT - which doesn't come up in the tair database but seems to be Prephenate Dehydratase, which works with ADT and Phrenate...  These are apparently ADT3 (and related to ADT6) that we have already looked at (previous step).
+
+
+
+
+###############################
+#AA/TA - these are called Aminotransferases in the article. This seems to be catchall term for several of the genes at this step, including AAT and PAT
+
+
+###############################
+#HPT - Histidinol-phosphate aminotransferase.  This does not seem to play a role in phenyalanine biosynthesis in plants... bacteria yes.  
+
+
+########################
+#for Apigenin we need flavone synthase I - AT5G24530
+
+grep AT5G24530 arabipsis_genes_names.txt > AT5G24530_ref_list.txt
+
+####
+
+#get just the locus name
+cut -f1 AT5G24530_ref_list.txt > AT5G24530-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT5G24530-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT5G24530-hits.txt
+
+#now we want to go back and match comparison, locus, AT5G24530 name
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT5G24530_ref_list.txt AT5G24530-hits.txt > AT5G24530-matched.txt
+
+#up.shoot_2vscont_s_DEG.xls      AT5G24530       DMR6
+
+
+
+
+#############################
+#Quercetin from Nargenin
+
+#F3H AT3G51240
+
+grep AT3G51240 arabipsis_genes_names.txt > AT3G51240_ref_list.txt
+
+#get just the locus name
+cut -f1 AT3G51240_ref_list.txt > AT3G51240-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT3G51240-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT3G51240-hits.txt
+
+#now we want to go back and match comparison, locus, AT3G51240 name
+#if field 1 in AT3G51240_ref_list.txt matches field 2 in AT3G51240-hits.txt,  recover the row in AT3G51240-hits.txt and add field 2 from AT3G51240_ref_list.txt to the recoverd row. 
+#Ask chatgpt - I have two tab delimited files in ubuntu. I want to create a third file based on this process - if field 1 in the file AT3G51240_ref_list.txt matches field 2 in AT3G51240-hits.txt then recover the row in AT3G51240-hits.txt and add field 2 from AT3G51240_ref_list.txt to the recoverd
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT3G51240_ref_list.txt AT3G51240-hits.txt > AT3G51240-matched.txt
+
+#NO HITS
+#F3H_ref_list.txt        AT3G51240       F3H
+
+
+################
+#from dihydrokaempferol to dihydroquercetin
+
+##AT5G07990 and CYP75B1
+
+grep AT5G07990 arabipsis_genes_names.txt > AT5G07990_ref_list.txt
+
+#get just the locus name
+cut -f1 AT5G07990_ref_list.txt > AT5G07990-loci.txt 
+
+#recover the loci that are up or down regulated in any file, -f1 here recovers both the comparison name and the locus name. Converted so column 1 is the comparison and 2 is the locus name
+grep -f AT5G07990-loci.txt * | cut -f1 | sed 's/:/\t/g' > AT5G07990-hits.txt
+
+#now we want to go back and match comparison, locus, AT5G07990 name
+#if field 1 in AT5G07990_ref_list.txt matches field 2 in AT5G07990-hits.txt,  recover the row in AT5G07990-hits.txt and add field 2 from AT5G07990_ref_list.txt to the recoverd row. 
+
+awk -F'\t' '
+NR==FNR {
+    ref[$1] = $2
+    next
+}
+($2 in ref) {
+    print $0 "\t" ref[$2]
+}
+' AT5G07990_ref_list.txt AT5G07990-hits.txt > AT5G07990-matched.txt
+
+##no hits
+#AT5G07990_ref_list.txt  AT5G07990       CYP75B1
+
+

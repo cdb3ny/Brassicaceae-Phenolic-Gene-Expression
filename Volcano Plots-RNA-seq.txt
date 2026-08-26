@@ -1,0 +1,320 @@
+#8/18/26
+#calculating a PCA the RNA-seq
+#Info on the RNA-seq analysis was provided by novogene, by Chunxu on 8/4/2020.
+#64 core server
+#path - /media/Scratch2nd4TB/Donovan/Erik_WKO_TEMP/usftp21.novogene.com/X202SC20020231-Z01-F002_Arabidopsis_thaliana_result/4.DiffExprAnalysis/DEGlist/
+
+#these subfolders contain all the results from DeSeq2 - parsed by comparison.
+
+
+#################
+#ROOT COMPARISON###
+#starting to make a base file for the volcano plot fro the root tissue
+/media/Scratch2nd4TB/Donovan/Erik_WKO_TEMP/usftp21.novogene.com/X202SC20020231-Z01-F002_Arabidopsis_thaliana_result/4.DiffExprAnalysis/DEGlist/root_2vscont_r
+
+cp root_2vscont_r_DEG_all.xls root_2vscont_r_DEG_all_volcano.xls
+
+# to calculate the volcano plot, I just need two columns, but I will keep three
+#Gene name (Column 1)
+#log2fold change (Column 8)
+#adjusted pvalue (Column 10)
+
+cut -f1,8,10 root_2vscont_r_DEG_all_volcano.xls > Volcano_plot_data.txt
+
+#To make the standard volcano plot that posits log2foldchange (x axis) against -log10 adjpvaule (y axis), we need to calculat the -log10 from the general adjpvalue.
+
+
+
+####make the first version of the plot
+
+library(ggplot2)
+
+# Read data
+volcano <- read.delim("Volcano_plot_data.txt",
+                      header = TRUE,
+                      sep = "\t",
+                      stringsAsFactors = FALSE)
+
+# Calculate -log10 adjusted p-value
+volcano$neg_log10_padj <- -log10(volcano$padj)
+
+# Define significance categories
+volcano$category <- "Not significant"
+
+volcano$category[volcano$padj < 0.05 &
+                 volcano$log2FoldChange >= 1] <- "Upregulated"
+
+volcano$category[volcano$padj < 0.05 &
+                 volcano$log2FoldChange <= -1] <- "Downregulated"
+
+# Count genes in each category
+category_counts <- table(volcano$category)
+
+# Display counts in R
+print(category_counts)
+
+#  Downregulated Not significant     Upregulated
+#            201            3498            1021
+
+
+# Create legend labels with gene counts
+legend_labels <- c(
+  "Upregulated" = paste0(
+    "Upregulated (n = ", category_counts["Upregulated"], ")"
+  ),
+  "Downregulated" = paste0(
+    "Downregulated (n = ", category_counts["Downregulated"], ")"
+  ),
+  "Not significant" = paste0(
+    "Not significant (n = ", category_counts["Not significant"], ")"
+  )
+)
+
+# Identify points above the y-axis limit
+volcano$above_25 <- volcano$neg_log10_padj > 25
+
+
+# Make volcano plot
+p <- ggplot(volcano, aes(x = log2FoldChange,
+                         y = neg_log10_padj,
+                         color = category)) +
+  
+  # Normal points (25 or below)
+  geom_point(
+    data = subset(volcano, neg_log10_padj <= 25),
+    alpha = 0.6,
+    size = 1.5
+  ) +
+  
+  # Points above 25
+  # These are displayed at 24.5 because the y-axis ends at 25
+  geom_point(
+    data = subset(volcano, neg_log10_padj > 25),
+    aes(y = 25),
+    shape = 16,
+    size = 1.5,
+    fill = "#E57373",
+    color = "#E57373",
+    stroke = 1,
+    show.legend = FALSE
+  ) +
+  
+  # Vertical lines showing fold-change thresholds
+  geom_vline(
+    xintercept = c(-1, 1),
+    linetype = "dashed"
+  ) +
+  
+  # Horizontal line showing adjusted p-value threshold
+  geom_hline(
+    yintercept = -log10(0.05),
+    linetype = "dashed"
+  ) +
+  
+  # Colors and legend labels
+  scale_color_manual(
+    values = c(
+      "Upregulated" = "#D62728",
+      "Downregulated" = "#2CA02C",
+      "Not significant" = "#1F77B4"
+    ),
+    labels = legend_labels
+  ) +
+  
+  # Labels
+  labs(
+    x = "log2 Fold Change",
+    y = "-log10 Adjusted p-value",
+    title = "Differential Gene Expression"
+  ) +
+  
+  # Limit displayed y-axis
+  coord_cartesian(ylim = c(0, 25)) +
+  
+  # Plot theme
+  theme_classic() +
+  
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank()
+  )
+
+
+# Display plot in R
+p
+
+
+# Save as high-resolution PNG
+ggsave(
+  "DESeq2_volcano_plot.png",
+  plot = p,
+  width = 7,
+  height = 5.5,
+  units = "in",
+  dpi = 600
+)
+
+
+# Save as PDF
+ggsave(
+  "DESeq2_volcano_plot.pdf",
+  plot = p,
+  width = 7,
+  height = 5.5,
+  units = "in"
+)
+
+
+#################
+#SHOOT COMPARISON###
+#starting to make a base file for the volcano plot fro the root tissue
+/media/Scratch2nd4TB/Donovan/Erik_WKO_TEMP/usftp21.novogene.com/X202SC20020231-Z01-F002_Arabidopsis_thaliana_result/4.DiffExprAnalysis/DEGlist/shoot_2vscont_s/
+
+cp shoot_2vscont_s_DEG_all.xls shoot_2vscont_s_DEG_all_volcano.xls
+
+# to calculate the volcano plot, I just need two columns, but I will keep three
+#Gene name (Column 1)
+#log2fold change (Column 8)
+#adjusted pvalue (Column 10)
+
+cut -f1,8,10 shoot_2vscont_s_DEG_all_volcano.xls > Volcano_plot_data.txt
+
+#To make the standard volcano plot that posits log2foldchange (x axis) against -log10 adjpvaule (y axis), we need to calculat the -log10 from the general adjpvalue.
+
+###make the plot
+
+library(ggplot2)
+
+# Read data
+volcano <- read.delim("Volcano_plot_data.txt",
+                      header = TRUE,
+                      sep = "\t",
+                      stringsAsFactors = FALSE)
+
+# Calculate -log10 adjusted p-value
+volcano$neg_log10_padj <- -log10(volcano$padj)
+
+# Define significance categories
+volcano$category <- "Not significant"
+
+volcano$category[volcano$padj < 0.05 &
+                 volcano$log2FoldChange >= 1] <- "Upregulated"
+
+volcano$category[volcano$padj < 0.05 &
+                 volcano$log2FoldChange <= -1] <- "Downregulated"
+
+# Count genes in each category
+category_counts <- table(volcano$category)
+
+# Display counts in R
+print(category_counts)
+ 
+#Downregulated Not significant     Upregulated
+#249            2716                  1324
+
+# Create legend labels with gene counts
+legend_labels <- c(
+  "Upregulated" = paste0(
+    "Upregulated (n = ", category_counts["Upregulated"], ")"
+  ),
+  "Downregulated" = paste0(
+    "Downregulated (n = ", category_counts["Downregulated"], ")"
+  ),
+  "Not significant" = paste0(
+    "Not significant (n = ", category_counts["Not significant"], ")"
+  )
+)
+
+# Identify points above the y-axis limit
+volcano$above_25 <- volcano$neg_log10_padj > 25
+
+
+# Make volcano plot
+p <- ggplot(volcano, aes(x = log2FoldChange,
+                         y = neg_log10_padj,
+                         color = category)) +
+  
+  # Normal points (25 or below)
+  geom_point(
+    data = subset(volcano, neg_log10_padj <= 25),
+    alpha = 0.6,
+    size = 1.5
+  ) +
+  
+  # Points above 25
+  # These are displayed at 25 because the y-axis ends at 25
+  geom_point(
+    data = subset(volcano, neg_log10_padj > 25),
+    aes(y = 25),
+    shape = 16,
+    size = 1.5,
+    fill = "#E57373",
+    color = "#E57373",
+    stroke = 1,
+    show.legend = FALSE
+  ) +
+  
+  # Vertical lines showing fold-change thresholds
+  geom_vline(
+    xintercept = c(-1, 1),
+    linetype = "dashed"
+  ) +
+  
+  # Horizontal line showing adjusted p-value threshold
+  geom_hline(
+    yintercept = -log10(0.05),
+    linetype = "dashed"
+  ) +
+  
+  # Colors and legend labels
+  scale_color_manual(
+    values = c(
+      "Upregulated" = "#D62728",
+      "Downregulated" = "#2CA02C",
+      "Not significant" = "#1F77B4"
+    ),
+    labels = legend_labels
+  ) +
+  
+  # Labels
+  labs(
+    x = "log2 Fold Change",
+    y = "-log10 Adjusted p-value",
+    title = "Differential Gene Expression"
+  ) +
+  
+  # Limit displayed y-axis
+  coord_cartesian(ylim = c(0, 25)) +
+  
+  # Plot theme
+  theme_classic() +
+  
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank()
+  )
+
+
+# Display plot in R
+p
+
+
+# Save as high-resolution PNG
+ggsave(
+  "DESeq2_volcano_plot.png",
+  plot = p,
+  width = 7,
+  height = 5.5,
+  units = "in",
+  dpi = 600
+)
+
+
+# Save as PDF
+ggsave(
+  "DESeq2_volcano_plot.pdf",
+  plot = p,
+  width = 7,
+  height = 5.5,
+  units = "in"
+)

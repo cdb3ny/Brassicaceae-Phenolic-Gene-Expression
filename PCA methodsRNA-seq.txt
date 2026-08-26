@@ -1,0 +1,427 @@
+#8/18/26
+#calculating a PCA the RNA-seq
+#Info on the RNA-seq analysis was provided by novogene, by Chunxu on 8/4/2020.
+#64 core server
+#path - /media/Scratch2nd4TB/Donovan/Erik_WKO_TEMP/usftp21.novogene.com/X202SC20020231-Z01-F002_Arabidopsis_thaliana_result/3.Quantification/Count/
+
+#file with all gene counts fpkm
+/media/Scratch2nd4TB/Donovan/Erik_WKO_TEMP/usftp21.novogene.com/X202SC20020231-Z01-F002_Arabidopsis_thaliana_result/3.Quantification/Count/fpkm_genename.xls
+#this is actually a txt file, not xls
+
+#making a copy.
+cp fpkm_genename.xls fpkm_genename8-18-26.txt
+
+#cutting out the fields that include the gene name and fpkm for the samples relevant to this study
+cut -f1-13 fpkm_genename8-18-26.txt > fpkm_genename8-18-26_2hr_only.txt
+
+#this is the file needed to make the PCA.
+
+#used chatgpt to identify possible PCA alternatives using these data.  The commented script adopted is as follows - for R.  Each step was run seperately to look for errors/issues.
+
+############################################################
+# PCA of RNA-seq FPKM data
+# Experimental design:
+#
+# Shoot Control:    Sht_c_A, Sht_c_B, Sht_c_C
+# Shoot Treatment:  Sht_2_A, Sht_2_B, Sht_2_C
+# Root Control:     Rt_c_A, Rt_c_B, Rt_c_C
+# Root Treatment:   Rt_2_A, Rt_2_B, Rt_2_C
+#
+# 3 biological replicates per group
+############################################################
+
+
+############################
+# 1. Load packages
+############################
+
+# Install ggplot2 if necessary:
+# install.packages("ggplot2")
+
+library(ggplot2)
+
+
+############################
+# 2. Read the FPKM data
+############################
+
+# Change this to the name/path of your FPKM file
+
+fpkm <- read.delim(
+    "fpkm_genename8-18-26_2hr_only.txt",
+    header = TRUE,
+    row.names = 1,
+    check.names = FALSE
+)
+
+
+############################
+# 3. Check the data
+############################
+
+cat("Number of genes:", nrow(fpkm), "\n")
+cat("Number of samples:", ncol(fpkm), "\n")
+
+cat("\nSample names:\n")
+print(colnames(fpkm))
+
+
+############################
+# 4. Check that the expected
+#    samples are present
+############################
+
+expected_samples <- c(
+    "Sht_2_A",
+    "Sht_2_B",
+    "Sht_2_C",
+    "Sht_c_A",
+    "Sht_c_B",
+    "Sht_c_C",
+    "Rt_c_A",
+    "Rt_c_B",
+    "Rt_c_C",
+    "Rt_2_A",
+    "Rt_2_B",
+    "Rt_2_C"
+)
+
+missing_samples <- setdiff(expected_samples, colnames(fpkm))
+
+if (length(missing_samples) > 0) {
+    stop(
+        paste(
+            "The following expected samples are missing:",
+            paste(missing_samples, collapse = ", ")
+        )
+    )
+}
+
+cat("\nAll 12 expected samples are present.\n")
+
+
+############################
+# 5. Put samples in a
+#    consistent order
+############################
+
+fpkm <- fpkm[, expected_samples]
+
+
+############################
+# 6. Make sure expression
+#    values are numeric
+############################
+
+fpkm <- as.data.frame(
+    lapply(fpkm, as.numeric),
+    row.names = rownames(fpkm)
+)
+
+
+############################
+# 7. Filter very low-expression
+#    genes
+############################
+
+# Keep genes with FPKM >= 1
+# in at least 3 samples
+
+keep <- rowSums(fpkm >= 1) >= 3
+
+fpkm_filtered <- fpkm[keep, ]
+
+cat("\nGenes before filtering:", nrow(fpkm), "\n")
+cat("Genes after filtering:", nrow(fpkm_filtered), "\n")
+cat("Genes removed:", sum(!keep), "\n")
+
+##result from this step
+#Genes before filtering: 32833
+#> cat("Genes after filtering:", nrow(fpkm_filtered), "\n")
+#Genes after filtering: 19465
+#> cat("Genes removed:", sum(!keep), "\n")
+#Genes removed: 13368
+
+
+############################
+# 8. Log2 transform
+############################
+
+# +1 prevents log2(0)
+
+log_fpkm <- log2(fpkm_filtered + 1)
+
+
+############################
+# 9. Perform PCA
+############################
+
+# Samples must be rows for prcomp(),
+# so transpose the expression matrix.
+
+pca <- prcomp(
+    t(log_fpkm),
+    center = TRUE,
+    scale. = TRUE
+)
+
+
+############################
+# 10. Calculate variance
+#     explained by each PC
+############################
+
+variance_explained <- 
+    (pca$sdev^2 / sum(pca$sdev^2)) * 100
+
+cat("\nVariance explained by each PC:\n")
+
+for (i in 1:10) {
+    cat(
+        "PC", i, ": ",
+        round(variance_explained[i], 2),
+        "%\n",
+        sep = ""
+    )
+}
+
+#result from this step:
+#PC1: 52.76%
+#PC2: 16.29%
+#PC3: 7.77%
+#PC4: 5.07%
+#PC5: 4.07%
+#PC6: 3.59%
+#PC7: 3.03%
+#PC8: 2.13%
+#PC9: 2.01%
+#PC10: 1.74%
+
+
+############################
+# 11. Create sample metadata
+############################
+
+metadata <- data.frame(
+    
+    Sample = c(
+        "Sht_2_A",
+        "Sht_2_B",
+        "Sht_2_C",
+        "Sht_c_A",
+        "Sht_c_B",
+        "Sht_c_C",
+        "Rt_c_A",
+        "Rt_c_B",
+        "Rt_c_C",
+        "Rt_2_A",
+        "Rt_2_B",
+        "Rt_2_C"
+    ),
+    
+    Tissue = c(
+        "Shoot",
+        "Shoot",
+        "Shoot",
+        "Shoot",
+        "Shoot",
+        "Shoot",
+        "Root",
+        "Root",
+        "Root",
+        "Root",
+        "Root",
+        "Root"
+    ),
+    
+    Treatment = c(
+        "Treatment",
+        "Treatment",
+        "Treatment",
+        "Control",
+        "Control",
+        "Control",
+        "Control",
+        "Control",
+        "Control",
+        "Treatment",
+        "Treatment",
+        "Treatment"
+    ),
+    
+    stringsAsFactors = FALSE
+)
+
+############################
+# 12. Make Sample the
+#     row name
+############################
+
+rownames(metadata) <- metadata$Sample
+
+
+############################
+# 13. Extract PCA coordinates
+############################
+
+pca_data <- data.frame(
+    Sample = as.character(rownames(pca$x)),
+    PC1 = pca$x[, "PC1"],
+    PC2 = pca$x[, "PC2"],
+    PC3 = pca$x[, "PC3"],
+    stringsAsFactors = FALSE
+)
+
+############################
+# 14. Add metadata to
+#     PCA coordinates
+############################
+
+pca_data$Tissue <- metadata[pca_data$Sample, "Tissue"]
+
+pca_data$Treatment <- metadata[pca_data$Sample, "Treatment"]
+
+
+############################
+# 15. Create a combined
+#     experimental group
+############################
+
+pca_data$Group <- paste(
+    pca_data$Tissue,
+    pca_data$Treatment,
+    sep = "_"
+)
+
+
+############################
+# 16. Print PCA coordinates
+############################
+
+cat("\nPCA coordinates:\n")
+print(pca_data)
+
+
+############################
+# 17. Make the PCA plot
+############################
+
+p <- ggplot(
+    pca_data,
+    aes(
+        x = PC1,
+        y = PC2,
+        shape = Tissue,
+        color = Treatment
+    )
+) +
+    
+    geom_point(
+        size = 4
+    ) +
+    
+    geom_text(
+        aes(label = Sample),
+        vjust = -1,
+        size = 3.5,
+        show.legend = FALSE
+    ) +
+    
+    scale_color_manual(
+        name = "Treatment",
+        values = c(
+            "Control" = "#377EB8",
+            "Treatment" = "#E41A1C"
+        )
+    ) +
+    
+    scale_shape_manual(
+        name = "Tissue",
+        values = c(
+            "Root" = 16,
+            "Shoot" = 17
+        )
+    ) +
+    
+    xlab(
+        paste0(
+            "PC1 (",
+            round(variance_explained[1], 1),
+            "%)"
+        )
+    ) +
+    
+    ylab(
+        paste0(
+            "PC2 (",
+            round(variance_explained[2], 1),
+            "%)"
+        )
+    ) +
+    
+    theme_classic() +
+    
+    theme(
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 11)
+    )
+
+############################
+# 18. Display PCA plot
+############################
+
+print(p)
+
+
+############################
+# 19. Save PCA plot
+############################
+
+ggsave(
+    "RNAseq_PCA_PC1_PC2.pdf",
+    plot = p,
+    width = 7,
+    height = 6
+)
+
+ggsave(
+    "RNAseq_PCA_PC1_PC2.png",
+    plot = p,
+    width = 7,
+    height = 6,
+    dpi = 300
+)
+
+
+############################
+# 20. Save PCA coordinates
+############################
+
+write.csv(
+    pca_data,
+    "RNAseq_PCA_coordinates.csv",
+    row.names = FALSE
+)
+
+
+############################
+# 21. Save variance explained
+############################
+
+variance_table <- data.frame(
+    PC = paste0("PC", seq_along(variance_explained)),
+    Variance_explained_percent = variance_explained
+)
+
+write.csv(
+    variance_table,
+    "RNAseq_PCA_variance_explained.csv",
+    row.names = FALSE
+)
+
+
+############################
+# DONE
+############################
